@@ -1,4 +1,3 @@
-
 /// Define a function for an interrupt and enqueue the interrupt on the global
 /// queue.
 #[macro_export]

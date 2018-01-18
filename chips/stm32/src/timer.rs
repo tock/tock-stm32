@@ -27,9 +27,11 @@ struct Registers {
 
 const TIMER2_ADDRESS: usize = 0x40000000;
 
-pub static mut TIMER2: AlarmTimer = AlarmTimer::new(TIMER2_ADDRESS,
-                                                    rcc::Clock::APB1(rcc::APB1Clock::TIM2),
-                                                    nvic::NvicIdx::TIM2);
+pub static mut TIMER2: AlarmTimer = AlarmTimer::new(
+    TIMER2_ADDRESS,
+    rcc::Clock::APB1(rcc::APB1Clock::TIM2),
+    nvic::NvicIdx::TIM2,
+);
 
 pub struct AlarmTimer {
     registers: *mut Registers,
@@ -59,7 +61,9 @@ impl AlarmTimer {
         if regs.sr.get() & (1 << 1) != 0 {
             self.disable_interrupts();
             regs.sr.set(regs.sr.get() & !(1 << 1)); // clear CC1IF
-            self.client.get().map(|cb| { cb.fired(); });
+            self.client.get().map(|cb| {
+                cb.fired();
+            });
         }
     }
 }

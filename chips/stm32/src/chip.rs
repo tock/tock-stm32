@@ -1,4 +1,4 @@
-use kernel::common::{RingBuffer, Queue};
+use kernel::common::{Queue, RingBuffer};
 use nvic::NvicIdx;
 
 const IQ_SIZE: usize = 100;
