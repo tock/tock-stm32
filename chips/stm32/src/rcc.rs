@@ -5,14 +5,14 @@ use core::mem;
 use flash;
 use kernel::common::VolatileCell;
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Clock {
     AHB(AHBClock),
     APB1(APB1Clock),
     APB2(APB2Clock),
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum AHBClock {
     DMA1,
     DMA2,
@@ -23,7 +23,7 @@ pub enum AHBClock {
     SDIO = 10,
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum APB1Clock {
     TIM2,
     TIM3,
@@ -50,7 +50,7 @@ pub enum APB1Clock {
     DAC,
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum APB2Clock {
     AFIO,
     IOPA = 2,
@@ -86,12 +86,12 @@ struct Registers {
     csr: VolatileCell<u32>,
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum OscillatorFrequency {
     Frequency8MHz,
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum SystemClockSource {
     InternalOscillator,
     PllInternalOscillatorAt64MHz,
@@ -159,7 +159,8 @@ unsafe fn configure_pll(multiplier: u32, hse: bool) {
 unsafe fn configure_internal_oscillator_pll() {
     let regs: &mut Registers = mem::transmute(RCC.registers);
 
-    regs.cfgr.set((0b000 << 11) | (0b100 << 8) | (0b0000 << 4) | 0b00); // APB2 | APB1 | AHB | HSI
+    regs.cfgr
+        .set((0b000 << 11) | (0b100 << 8) | (0b0000 << 4) | 0b00); // APB2 | APB1 | AHB | HSI
     while regs.cfgr.get() & (0b11 << 2) != (0b00 << 2) {} // wait for switch to HSI
 
     flash::FLASH.set_latency(flash::Latency::TwoWaitStates);
@@ -170,7 +171,8 @@ unsafe fn configure_internal_oscillator_pll() {
 unsafe fn configure_external_oscillator_pll(frequency: OscillatorFrequency) {
     let regs: &mut Registers = mem::transmute(RCC.registers);
 
-    regs.cfgr.set((0b000 << 11) | (0b100 << 8) | (0b0000 << 4) | 0b00); // APB2 | APB1 | AHB | HSI
+    regs.cfgr
+        .set((0b000 << 11) | (0b100 << 8) | (0b0000 << 4) | 0b00); // APB2 | APB1 | AHB | HSI
     while regs.cfgr.get() & (0b11 << 2) != (0b00 << 2) {} // wait for switch to HSI
 
     flash::FLASH.set_latency(flash::Latency::TwoWaitStates);
@@ -216,23 +218,24 @@ fn get_apb2_prescaler() -> u32 {
 fn get_prescaler(clock: Clock) -> u32 {
     match clock {
         Clock::AHB(_) => get_ahb_prescaler(),
-        Clock::APB1(a) => {
-            match a {
-                APB1Clock::TIM2 | APB1Clock::TIM3 | APB1Clock::TIM4 | APB1Clock::TIM5 |
-                APB1Clock::TIM6 | APB1Clock::TIM7 if get_apb1_prescaler() > 1 => {
-                    get_ahb_prescaler() * get_apb1_prescaler() / 2
-                }
-                _ => get_ahb_prescaler() * get_apb1_prescaler(),
+        Clock::APB1(a) => match a {
+            APB1Clock::TIM2
+            | APB1Clock::TIM3
+            | APB1Clock::TIM4
+            | APB1Clock::TIM5
+            | APB1Clock::TIM6
+            | APB1Clock::TIM7 if get_apb1_prescaler() > 1 =>
+            {
+                get_ahb_prescaler() * get_apb1_prescaler() / 2
             }
-        }
-        Clock::APB2(a) => {
-            match a {
-                APB2Clock::TIM1 | APB2Clock::TIM8 if get_apb2_prescaler() > 1 => {
-                    get_ahb_prescaler() * get_apb2_prescaler() / 2
-                }
-                _ => get_ahb_prescaler() * get_apb2_prescaler(),
+            _ => get_ahb_prescaler() * get_apb1_prescaler(),
+        },
+        Clock::APB2(a) => match a {
+            APB2Clock::TIM1 | APB2Clock::TIM8 if get_apb2_prescaler() > 1 => {
+                get_ahb_prescaler() * get_apb2_prescaler() / 2
             }
-        }
+            _ => get_ahb_prescaler() * get_apb2_prescaler(),
+        },
     }
 }
 

@@ -32,7 +32,9 @@ pub struct FlashController {
 
 impl FlashController {
     const fn new(base_addr: usize) -> FlashController {
-        FlashController { registers: base_addr as *mut Registers }
+        FlashController {
+            registers: base_addr as *mut Registers,
+        }
     }
 
     pub fn set_latency(&self, latency: Latency) {

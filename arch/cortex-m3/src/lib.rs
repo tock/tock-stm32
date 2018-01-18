@@ -1,4 +1,4 @@
-#![feature(asm,const_fn,naked_functions)]
+#![feature(asm, const_fn, naked_functions)]
 #![no_std]
 
 extern crate kernel;
@@ -8,7 +8,8 @@ pub mod systick;
 #[no_mangle]
 #[naked]
 pub unsafe extern "C" fn systick_handler() {
-    asm!("
+    asm!(
+        "
         /* Skip saving process state if not coming from user-space */
         cmp lr, #0xfffffffd
         bne _systick_handler_no_stacking
@@ -30,7 +31,8 @@ pub unsafe extern "C" fn systick_handler() {
 
         movw LR, #0xFFF9
         movt LR, #0xFFFF
-         ");
+         "
+    );
 }
 
 #[no_mangle]
@@ -38,7 +40,8 @@ pub unsafe extern "C" fn systick_handler() {
 /// All ISRs are caught by this handler which indirects to a custom handler by
 /// indexing into `INTERRUPT_TABLE` based on the ISR number.
 pub unsafe extern "C" fn generic_isr() {
-    asm!("
+    asm!(
+        "
     /* Skip saving process state if not coming from user-space */
     cmp lr, #0xfffffffd
     bne _ggeneric_isr_no_stacking
@@ -72,14 +75,16 @@ _ggeneric_isr_no_stacking:
     msr CONTROL, r0
 
     movw LR, #0xFFF9
-    movt LR, #0xFFFF");
+    movt LR, #0xFFFF"
+    );
 }
 
 #[no_mangle]
 #[naked]
 #[allow(non_snake_case)]
 pub unsafe extern "C" fn SVC_Handler() {
-    asm!("
+    asm!(
+        "
   ldr r0, EXC_RETURN_MSP
   cmp lr, r0
   bne to_kernel
@@ -97,13 +102,15 @@ EXC_RETURN_MSP:
   .word 0xFFFFFFF9
 EXC_RETURN_PSP:
   .word 0xFFFFFFFD
-  ");
+  "
+    );
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn switch_to_user(mut user_stack: *const u8,
-                                        process_regs: &mut [usize; 8])
-                                        -> *mut u8 {
+pub unsafe extern "C" fn switch_to_user(
+    mut user_stack: *const u8,
+    process_regs: &mut [usize; 8],
+) -> *mut u8 {
     asm!("
     /* Load non-hardware-stacked registers from Process stack */
     ldmia $2!, {r4-r7}

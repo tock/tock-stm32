@@ -20,11 +20,13 @@ struct USARTRegisters {
     gtpr: VolatileCell<u32>,
 }
 
-const USART_BASE_ADDRS: [*mut USARTRegisters; 5] = [0x40013800 as *mut USARTRegisters,
-                                                    0x40004400 as *mut USARTRegisters,
-                                                    0x40004800 as *mut USARTRegisters,
-                                                    0x40004c00 as *mut USARTRegisters,
-                                                    0x40005000 as *mut USARTRegisters];
+const USART_BASE_ADDRS: [*mut USARTRegisters; 5] = [
+    0x40013800 as *mut USARTRegisters,
+    0x40004400 as *mut USARTRegisters,
+    0x40004800 as *mut USARTRegisters,
+    0x40004c00 as *mut USARTRegisters,
+    0x40005000 as *mut USARTRegisters,
+];
 
 pub struct USART {
     registers: *mut USARTRegisters,
@@ -38,17 +40,23 @@ pub struct USART {
     offset: Cell<usize>,
 }
 
-pub static mut USART1: USART = USART::new(USART_BASE_ADDRS[0],
-                                          rcc::Clock::APB2(rcc::APB2Clock::USART1),
-                                          nvic::NvicIdx::USART1);
+pub static mut USART1: USART = USART::new(
+    USART_BASE_ADDRS[0],
+    rcc::Clock::APB2(rcc::APB2Clock::USART1),
+    nvic::NvicIdx::USART1,
+);
 
-pub static mut USART2: USART = USART::new(USART_BASE_ADDRS[1],
-                                          rcc::Clock::APB1(rcc::APB1Clock::USART2),
-                                          nvic::NvicIdx::USART2);
+pub static mut USART2: USART = USART::new(
+    USART_BASE_ADDRS[1],
+    rcc::Clock::APB1(rcc::APB1Clock::USART2),
+    nvic::NvicIdx::USART2,
+);
 
-pub static mut USART3: USART = USART::new(USART_BASE_ADDRS[2],
-                                          rcc::Clock::APB1(rcc::APB1Clock::USART3),
-                                          nvic::NvicIdx::USART3);
+pub static mut USART3: USART = USART::new(
+    USART_BASE_ADDRS[2],
+    rcc::Clock::APB1(rcc::APB1Clock::USART3),
+    nvic::NvicIdx::USART3,
+);
 
 impl USART {
     const fn new(base_addr: *mut USARTRegisters, clock: rcc::Clock, nvic: nvic::NvicIdx) -> USART {
@@ -109,7 +117,10 @@ impl USART {
 
     pub fn enable_rx(&self) {
         let regs: &mut USARTRegisters = unsafe { mem::transmute(self.registers) };
-        self.rx.get().unwrap().configure(gpio::Mode::Input(gpio::InputMode::Floating));
+        self.rx
+            .get()
+            .unwrap()
+            .configure(gpio::Mode::Input(gpio::InputMode::Floating));
         self.enable();
         regs.cr1.set(regs.cr1.get() | (1 << 2)); // RE
     }
@@ -126,7 +137,9 @@ impl USART {
     }
 
     fn send_next(&self) {
-        self.buffer.map(|buffer| { self.send_byte(buffer[self.offset.get()]); });
+        self.buffer.map(|buffer| {
+            self.send_byte(buffer[self.offset.get()]);
+        });
     }
 
     pub fn handle_interrupt(&self) {
