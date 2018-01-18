@@ -32,7 +32,7 @@ alldoc:
 
 .PHONY: fmt format
 fmt format:
-	@./tock/tools/run_cargo_fmt.sh
+	@./tools/run_cargo_fmt.sh
 
 .PHONY: list list-boards list-platforms
 list list-boards list-platforms:
