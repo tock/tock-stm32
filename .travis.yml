@@ -1,0 +1,31 @@
+sudo: false
+language: rust
+
+env:
+  - RUSTUP_TOOLCHAIN=nightly-2018-01-05
+
+cache:
+  cargo: true
+  directories:
+    - $HOME/gcc-arm-none-eabi-6_2-2016q4
+    - $HOME/uncrustify-uncrustify-0.65
+    - $HOME/local_cargo
+
+os:
+  - linux
+
+rust:
+  - nightly-2018-01-05
+
+before_install:
+  - tock/.travis-install-gcc
+  - export PATH="$PATH:$HOME/gcc-arm-none-eabi-6_2-2016q4/bin"
+  - export PATH="$PATH:$HOME/uncrustify-uncrustify-0.65/build"
+
+before_script:
+  - (cargo install xargo || true)
+
+script:
+  - export PATH=$HOME/.cargo/bin:$PATH
+  - tools/run_cargo_fmt.sh diff
+  - make allboards
