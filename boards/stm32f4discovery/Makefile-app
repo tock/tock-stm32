@@ -1,0 +1,13 @@
+$(call check_defined, BUILDDIR)
+$(call check_defined, PACKAGE_NAME)
+
+APP_FLASH = $(TOCK_USERLAND_BASE_DIR)/tools/flash/stm32f4.sh
+
+.PHONY: program
+program: $(BUILDDIR)/$(PACKAGE_NAME).tab
+	echo "Not implemented"
+
+# Upload programs over JTAG
+.PHONY: flash
+flash: $(BUILDDIR)/cortex-m4/cortex-m4.bin
+	APP_BASE_ADDR=0x08080000 $(APP_FLASH) $<

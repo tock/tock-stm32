@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "MCU",
+            "type": "gdb",
+            "request": "attach",
+            "gdbpath": "arm-none-eabi-gdb",
+            "executable": "./target/thumbv7em-none-eabi/debug/stm32f4discovery",
+            "target": ":3333",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "prettyPrinters",
+            "autorun": [
+                "monitor reset halt",
+                "monitor arm semihosting enable",
+            ],
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+/* Memory Spaces Definitions, 1024K flash, 128K ram */
+ROM_ORIGIN  = 0x08000000; /* No bootloader */
+ROM_LENGTH  = 0x00080000; /* 512K */
+PROG_ORIGIN = 0x08080000;
+PROG_LENGTH = 0x00080000; /* 512K */
+RAM_ORIGIN  = 0x20000000;
+RAM_LENGTH  = 0x00020000;
+
+MPU_MIN_ALIGN = 8K;

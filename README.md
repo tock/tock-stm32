@@ -14,5 +14,6 @@ Follow the official [getting started guide](https://github.com/helena-project/to
 ## Supported Boards
 
  * [Nucleo-F103RB](./boards/nucleo_f103)
+ * [STM32F4DISCOVERY](./boards/stm32f4discovery)
 
 Tock supports more than just STM32-based boards, take a look at [the boards](https://github.com/helena-project/tock/tree/master/boards) which are part of main repository too!
