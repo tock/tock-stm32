@@ -1,3 +1,7 @@
+//! Peripheral implementations for the STM32F4 MCUs.
+//!
+//! Right now focusing on STM32F405xx/07xx.
+
 #![crate_name = "stm32f4"]
 #![crate_type = "rlib"]
 #![feature(repr_align, attr_literals, const_cell_new)]

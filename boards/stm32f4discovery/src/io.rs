@@ -1,3 +1,5 @@
+//! Semihosting console for standard and debugging/panic output
+
 use core;
 use core::fmt::*;
 use kernel::process;

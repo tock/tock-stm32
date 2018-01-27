@@ -1,3 +1,5 @@
+//! GPIO controller
+
 use core::cell::Cell;
 use exti;
 use helpers::{Bit, BitRange};

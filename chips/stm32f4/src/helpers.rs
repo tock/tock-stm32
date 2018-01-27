@@ -1,3 +1,5 @@
+//! Various helper methods, traits
+
 use bitfield;
 use kernel::common::VolatileCell;
 

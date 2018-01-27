@@ -1,3 +1,5 @@
+//! External interrupt/event controller
+
 use core::cell::Cell;
 use core::ops::{Index, IndexMut};
 use gpio;

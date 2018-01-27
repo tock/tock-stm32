@@ -1,3 +1,7 @@
+//! Basic implementation of ARM semihosting
+//!
+//! http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0471g/Bgbjjgij.html
+
 use self::SysOp::*;
 use core::cell::Cell;
 use core::fmt::{self, Write};

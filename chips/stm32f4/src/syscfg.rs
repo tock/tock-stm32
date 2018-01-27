@@ -1,3 +1,5 @@
+//! System configuration controller
+
 use kernel::common::VolatileCell;
 
 #[repr(C)]

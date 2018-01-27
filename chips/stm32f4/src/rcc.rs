@@ -1,3 +1,5 @@
+//! Reset and clock control
+
 use bitfield::Bit;
 use kernel::common::VolatileCell;
 
