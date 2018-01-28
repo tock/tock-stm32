@@ -1,0 +1,44 @@
+[[package]]
+name = "bitfield"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "capsules"
+version = "0.1.0"
+dependencies = [
+ "kernel 0.1.0",
+]
+
+[[package]]
+name = "cortexm4"
+version = "0.1.0"
+dependencies = [
+ "kernel 0.1.0",
+]
+
+[[package]]
+name = "kernel"
+version = "0.1.0"
+
+[[package]]
+name = "stm32f4"
+version = "0.1.0"
+dependencies = [
+ "bitfield 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cortexm4 0.1.0",
+ "kernel 0.1.0",
+]
+
+[[package]]
+name = "stm32f4discovery"
+version = "0.1.0"
+dependencies = [
+ "capsules 0.1.0",
+ "cortexm4 0.1.0",
+ "kernel 0.1.0",
+ "stm32f4 0.1.0",
+]
+
+[metadata]
+"checksum bitfield 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ce82aa1082cbfdaa1c5e4c44b832d3e7fcf8d672033553f4e3a32487901e05ac"

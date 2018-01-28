@@ -1,0 +1,9 @@
+[package]
+name = "stm32f4"
+version = "0.1.0"
+authors = ["Tock Project Developers <tock-dev@googlegroups.com>"]
+
+[dependencies]
+cortexm4 = { path = "../../tock/arch/cortex-m4" }
+kernel = { path = "../../tock/kernel" }
+bitfield = "0.12.1"

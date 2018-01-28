@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../chips/stm32f4"
+		},
+		{
+			"path": "../../tock/arch/cortex-m4"
+		},
+		{
+			"path": "../../tock/capsules"
+		},
+		{
+			"path": "../../tock/kernel"
+		}
+	],
+	"settings": {
+		"rust-client.channel": "nightly-2018-01-05",
+		"rust.goto_def_racer_fallback": true,
+		"rust.sysroot": "/home/michal/tock-stm32/boards/stm32f4discovery/.xargo",
+		"rust.target": "thumbv7em-none-eabi",
+	}
+}
