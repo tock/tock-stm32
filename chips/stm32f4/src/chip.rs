@@ -6,7 +6,7 @@ use kernel::Chip;
 
 pub struct Stm32f4 {
     pub mpu: cortexm4::mpu::MPU,
-    pub systick: &'static cortexm4::systick::SysTick,
+    pub systick: cortexm4::systick::SysTick,
 }
 
 impl Stm32f4 {
@@ -57,18 +57,8 @@ impl Chip for Stm32f4 {
     }
 
     fn systick(&self) -> &cortexm4::systick::SysTick {
-        self.systick
+        &self.systick
     }
 
-    fn prepare_for_sleep(&self) {
-        /*if pm::deep_sleep_ready() {
-            unsafe {
-                cortexm4::scb::set_sleepdeep();
-            }
-        } else {
-            unsafe {
-                cortexm4::scb::unset_sleepdeep();
-            }
-        }*/
-    }
+    fn sleep(&self) {}
 }

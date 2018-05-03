@@ -12,6 +12,6 @@ pub mod chip;
 pub mod flash;
 pub mod gpio;
 pub mod nvic;
-pub mod usart;
 pub mod rcc;
 pub mod timer;
+pub mod usart;

@@ -1,9 +1,8 @@
 #![no_std]
 #![no_main]
-#![feature(asm, const_fn, lang_items, compiler_builtins_lib)]
+#![feature(asm, const_fn, lang_items)]
 
 extern crate capsules;
-extern crate compiler_builtins;
 extern crate cortexm3;
 #[allow(unused_imports)]
 #[macro_use(debug, static_init)]
@@ -12,9 +11,9 @@ extern crate stm32;
 extern crate stm32f1;
 
 use capsules::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use kernel::Platform;
 use kernel::hil;
 use kernel::hil::Controller;
+use kernel::Platform;
 
 #[macro_use]
 pub mod io;
@@ -30,7 +29,8 @@ const FAULT_RESPONSE: kernel::process::FaultResponse = kernel::process::FaultRes
 static mut APP_MEMORY: [u8; 10240] = [0; 10240];
 
 // Actual memory for holding the active process structures.
-static mut PROCESSES: [Option<kernel::Process<'static>>; NUM_PROCS] = [None, None, None, None];
+static mut PROCESSES: [Option<&'static mut kernel::Process<'static>>; NUM_PROCS] =
+    [None, None, None, None];
 
 /// A structure representing this platform that holds references to all
 /// capsules for this platform.
@@ -84,6 +84,7 @@ pub unsafe fn reset_handler() {
             &stm32::usart::USART2,
             115200,
             &mut capsules::console::WRITE_BUF,
+            &mut capsules::console::READ_BUF,
             kernel::Grant::create()
         )
     );
@@ -110,12 +111,10 @@ pub unsafe fn reset_handler() {
     // LEDs
     let led_pins = static_init!(
         [(&'static stm32::gpio::GPIOPin, capsules::led::ActivationMode); 1],
-        [
-            (
-                &stm32::gpio::PA[5],
-                capsules::led::ActivationMode::ActiveHigh
-            )
-        ]
+        [(
+            &stm32::gpio::PA[5],
+            capsules::led::ActivationMode::ActiveHigh
+        )]
     );
     let led = static_init!(
         capsules::led::LED<'static, stm32::gpio::GPIOPin>,
@@ -125,12 +124,10 @@ pub unsafe fn reset_handler() {
     // Buttons
     let button_pins = static_init!(
         [(&'static stm32::gpio::GPIOPin, capsules::button::GpioMode); 1],
-        [
-            (
-                &stm32::gpio::PC[13],
-                capsules::button::GpioMode::LowWhenPressed
-            )
-        ]
+        [(
+            &stm32::gpio::PC[13],
+            capsules::button::GpioMode::LowWhenPressed
+        )]
     );
     let button = static_init!(
         capsules::button::Button<'static, stm32::gpio::GPIOPin>,
@@ -165,7 +162,7 @@ pub unsafe fn reset_handler() {
             &stm32::gpio::PA[4], // A2
             &stm32::gpio::PB[0], // A3
             &stm32::gpio::PC[1], // A4
-            &stm32::gpio::PC[0]  // A5
+            &stm32::gpio::PC[0], // A5
         ]
     );
     let gpio = static_init!(

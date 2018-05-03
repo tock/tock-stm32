@@ -16,14 +16,14 @@ extern crate cortexm4;
 extern crate kernel;
 
 pub mod chip;
+pub mod exti;
+pub mod gpio;
+pub mod helpers;
 pub mod nvic;
 pub mod rcc;
-pub mod gpio;
 pub mod syscfg;
-pub mod exti;
-pub mod helpers;
 
-use cortexm4::{generic_isr, systick_handler, SVC_Handler};
+use cortexm4::{generic_isr, svc_handler, systick_handler};
 
 unsafe extern "C" fn unhandled_interrupt() {
     let mut interrupt_number: u32;
@@ -70,7 +70,7 @@ pub static BASE_VECTORS: [unsafe extern fn(); 16] = [
     /* UsageFault*/     unhandled_interrupt,
     unhandled_interrupt, unhandled_interrupt, unhandled_interrupt,
     unhandled_interrupt,
-    /* SVC */           SVC_Handler,
+    /* SVC */           svc_handler,
     /* DebugMon */      unhandled_interrupt,
     unhandled_interrupt,
     /* PendSV */        unhandled_interrupt,

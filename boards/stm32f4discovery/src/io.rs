@@ -8,8 +8,8 @@ use semihosting;
 pub static mut STD_OUT: semihosting::Channel = semihosting::Channel::new();
 
 pub unsafe fn std_out_init() {
-    use kernel::common::VolatileCell;
     use kernel::common::static_ref::StaticRef;
+    use kernel::common::VolatileCell;
 
     const DHCSR: usize = 0xe000_edf0;
     const C_DEBUGEN_MASK: u32 = 1;

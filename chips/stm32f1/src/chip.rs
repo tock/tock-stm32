@@ -5,7 +5,7 @@ use stm32::nvic::NvicIdx;
 
 pub struct STM32F1 {
     mpu: (),
-    systick: &'static cortexm3::systick::SysTick,
+    systick: cortexm3::systick::SysTick,
 }
 
 impl STM32F1 {
@@ -27,7 +27,7 @@ impl kernel::Chip for STM32F1 {
     }
 
     fn systick(&self) -> &Self::SysTick {
-        self.systick
+        &self.systick
     }
 
     fn service_pending_interrupts(&mut self) {
@@ -46,4 +46,6 @@ impl kernel::Chip for STM32F1 {
     fn has_pending_interrupts(&self) -> bool {
         unsafe { stm32::chip::has_pending_interrupts() }
     }
+
+    fn sleep(&self) {}
 }

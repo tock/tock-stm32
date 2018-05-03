@@ -1,9 +1,8 @@
 #![no_std]
 #![no_main]
-#![feature(asm, const_fn, lang_items, compiler_builtins_lib, const_cell_new, core_intrinsics)]
+#![feature(asm, const_fn, lang_items, const_cell_new, core_intrinsics)]
 
 extern crate capsules;
-extern crate compiler_builtins;
 #[allow(unused_imports)]
 #[macro_use(debug, debug_gpio, static_init)]
 extern crate kernel;
@@ -25,7 +24,7 @@ const FAULT_RESPONSE: kernel::process::FaultResponse = kernel::process::FaultRes
 #[link_section = ".app_memory"]
 static mut APP_MEMORY: [u8; 16384] = [0; 16384];
 
-static mut PROCESSES: [Option<kernel::Process<'static>>; NUM_PROCS] = [None, None, None, None];
+static mut PROCESSES: [Option<&mut kernel::Process<'static>>; NUM_PROCS] = [None, None, None, None];
 
 struct Discovery {
     console: &'static capsules::console::Console<'static, semihosting::Channel>,
@@ -61,6 +60,7 @@ pub unsafe fn reset_handler() {
             &io::STD_OUT,
             115200,
             &mut capsules::console::WRITE_BUF,
+            &mut capsules::console::READ_BUF,
             kernel::Grant::create()
         )
     );
@@ -84,7 +84,7 @@ pub unsafe fn reset_handler() {
             &stm32f4::gpio::PD12,
             &stm32f4::gpio::PD13,
             &stm32f4::gpio::PD14,
-            &stm32f4::gpio::PD15
+            &stm32f4::gpio::PD15,
         ]
     );
 
@@ -112,12 +112,10 @@ pub unsafe fn reset_handler() {
     // Buttons
     let button_pins = static_init!(
         [(&'static stm32f4::gpio::GPIOPin, capsules::button::GpioMode); 1],
-        [
-            (
-                &stm32f4::gpio::PA0,
-                capsules::button::GpioMode::LowWhenPressed
-            )
-        ]
+        [(
+            &stm32f4::gpio::PA0,
+            capsules::button::GpioMode::LowWhenPressed
+        )]
     );
 
     let button = static_init!(
