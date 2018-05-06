@@ -1,6 +1,6 @@
 use core::ptr::read_volatile;
+use cortexm3::nvic;
 use kernel;
-use stm32;
 
 unsafe extern "C" fn unhandled_interrupt() {
     let mut interrupt_number: u32;
@@ -65,71 +65,6 @@ pub static BASE_VECTORS: [unsafe extern fn(); 16] = [
 pub static IRQS: [unsafe extern "C" fn(); 60] = [generic_isr; 60];
 
 #[no_mangle]
-#[cfg_attr(rustfmt, rustfmt_skip)]
-pub static INTERRUPT_TABLE: [Option<unsafe extern fn()>; 60] = [
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(stm32::timer::timer2_handler),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(stm32::usart::usart1_handler),
-    Option::Some(stm32::usart::usart2_handler),
-    Option::Some(stm32::usart::usart3_handler),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-    Option::Some(unhandled_interrupt),
-];
-
-#[no_mangle]
 pub unsafe extern "C" fn init() {
     // Relocate data segment.
     // Assumes data starts right after text segment as specified by the linker
@@ -154,6 +89,8 @@ pub unsafe extern "C" fn init() {
         *pdest = 0;
         pdest = pdest.offset(1);
     }
+
+    nvic::enable_all();
 }
 
 unsafe extern "C" fn hard_fault_handler() {

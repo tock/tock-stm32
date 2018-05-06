@@ -1,7 +1,8 @@
 use cortexm3;
+use cortexm3::nvic;
 use kernel;
 use stm32;
-use stm32::nvic::NvicIdx;
+use stm32::nvic::*;
 
 pub struct STM32F1 {
     mpu: (),
@@ -10,7 +11,6 @@ pub struct STM32F1 {
 
 impl STM32F1 {
     pub unsafe fn new() -> STM32F1 {
-        stm32::chip::init();
         STM32F1 {
             mpu: (),
             systick: cortexm3::systick::SysTick::new(),
@@ -32,19 +32,21 @@ impl kernel::Chip for STM32F1 {
 
     fn service_pending_interrupts(&mut self) {
         unsafe {
-            stm32::chip::dequeue_interrupt().map(|interrupt| {
+            while let Some(interrupt) = nvic::next_pending() {
                 match interrupt {
-                    NvicIdx::TIM2 => stm32::timer::TIMER2.handle_interrupt(),
-                    NvicIdx::USART1 => stm32::usart::USART1.handle_interrupt(),
-                    _ => {}
+                    TIM2 => stm32::timer::TIMER2.handle_interrupt(),
+                    USART1 => stm32::usart::USART1.handle_interrupt(),
+                    _ => panic!("unhandled interrupt {}", interrupt),
                 }
-                stm32::nvic::enable(interrupt);
-            });
+                let n = nvic::Nvic::new(interrupt);
+                n.clear_pending();
+                n.enable();
+            }
         }
     }
 
     fn has_pending_interrupts(&self) -> bool {
-        unsafe { stm32::chip::has_pending_interrupts() }
+        unsafe { nvic::has_pending() }
     }
 
     fn sleep(&self) {}

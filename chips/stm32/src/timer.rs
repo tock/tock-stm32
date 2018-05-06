@@ -2,7 +2,6 @@ use core::cell::Cell;
 use core::mem;
 use kernel::common::VolatileCell;
 use kernel::hil;
-use nvic;
 use rcc;
 
 #[repr(C, packed)]
@@ -27,25 +26,20 @@ struct Registers {
 
 const TIMER2_ADDRESS: usize = 0x40000000;
 
-pub static mut TIMER2: AlarmTimer = AlarmTimer::new(
-    TIMER2_ADDRESS,
-    rcc::Clock::APB1(rcc::APB1Clock::TIM2),
-    nvic::NvicIdx::TIM2,
-);
+pub static mut TIMER2: AlarmTimer =
+    AlarmTimer::new(TIMER2_ADDRESS, rcc::Clock::APB1(rcc::APB1Clock::TIM2));
 
 pub struct AlarmTimer {
     registers: *mut Registers,
     clock: rcc::Clock,
-    nvic: nvic::NvicIdx,
     client: Cell<Option<&'static hil::time::Client>>,
 }
 
 impl AlarmTimer {
-    const fn new(base_addr: usize, clock: rcc::Clock, nvic: nvic::NvicIdx) -> AlarmTimer {
+    const fn new(base_addr: usize, clock: rcc::Clock) -> AlarmTimer {
         AlarmTimer {
             registers: base_addr as *mut Registers,
             clock: clock,
-            nvic: nvic,
             client: Cell::new(None),
         }
     }
@@ -76,7 +70,6 @@ impl hil::Controller for AlarmTimer {
         self.client.set(Some(client));
         unsafe {
             rcc::enable_clock(self.clock);
-            nvic::enable(self.nvic);
         }
         regs.cr1.set(0);
         regs.cr2.set(0);
@@ -117,5 +110,3 @@ impl hil::time::Alarm for AlarmTimer {
         regs.ccr[0].get()
     }
 }
-
-interrupt_handler!(timer2_handler, TIM2);

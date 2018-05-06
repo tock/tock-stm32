@@ -1,117 +1,62 @@
-//! Implementation of the nested vectored interrupt controller (NVIC).
+//! Named constants for NVIC IDs
 
-use core;
-use core::intrinsics;
-use kernel::common::VolatileCell;
-
-#[repr(C, packed)]
-struct Nvic {
-    iser: [VolatileCell<u32>; 3],
-    _reserved0: [u32; 29],
-    icer: [VolatileCell<u32>; 3],
-    _reserved1: [u32; 29],
-    ispr: [VolatileCell<u32>; 3],
-    _reserved2: [u32; 29],
-    icpr: [VolatileCell<u32>; 3],
-    _reserved3: [u32; 29],
-    iabr: [VolatileCell<u32>; 3],
-    _reserved4: [u32; 61],
-    ip: [VolatileCell<u8>; 84],
-    _reserved5: [u32; 620],
-    stir: VolatileCell<u32>,
-}
-
-#[repr(C)]
-#[derive(Copy, Clone)]
-#[allow(non_camel_case_types)]
-pub enum NvicIdx {
-    WWDG,
-    PVD,
-    TAMPER,
-    RTC,
-    FLASH,
-    RCC,
-    EXTI0,
-    EXTI1,
-    EXTI2,
-    EXTI3,
-    EXTI4,
-    DMA1_Channel1,
-    DMA1_Channel2,
-    DMA1_Channel3,
-    DMA1_Channel4,
-    DMA1_Channel5,
-    DMA1_Channel6,
-    DMA1_Channel7,
-    ADC1_2,
-    USB_HP_CAN1_TX,
-    USB_LP_CAN1_RX0,
-    CAN1_RX1,
-    CAN1_SCE,
-    EXTI9_5,
-    TIM1_BRK,
-    TIM1_UP,
-    TIM1_TRG_COM,
-    TIM1_CC,
-    TIM2,
-    TIM3,
-    TIM4,
-    I2C1_EV,
-    I2C1_ER,
-    I2C2_EV,
-    I2C2_ER,
-    SPI1,
-    SPI2,
-    USART1,
-    USART2,
-    USART3,
-    EXTI15_10,
-    RTC_Alarm,
-    USBWakeUp,
-    TIM8_BRK,
-    TIM8_UP,
-    TIM8_TRG_COM,
-    TIM8_CC,
-    ADC3,
-    FSMC,
-    SDIO,
-    TIM5,
-    SPI3,
-    UART4,
-    UART5,
-    TIM6,
-    TIM7,
-    DMA2_Channel1,
-    DMA2_Channel2,
-    DMA2_Channel3,
-    DMA2_Channel4_5,
-}
-
-impl core::default::Default for NvicIdx {
-    fn default() -> NvicIdx {
-        NvicIdx::WWDG
-    }
-}
-
-const BASE_ADDRESS: usize = 0xe000e100;
-
-pub unsafe fn enable(signal: NvicIdx) {
-    let nvic: &mut Nvic = intrinsics::transmute(BASE_ADDRESS);
-    let interrupt = signal as usize;
-
-    nvic.iser[interrupt / 32].set(1 << (interrupt % 32));
-}
-
-pub unsafe fn disable(signal: NvicIdx) {
-    let nvic: &mut Nvic = intrinsics::transmute(BASE_ADDRESS);
-    let interrupt = signal as usize;
-
-    nvic.icer[interrupt / 32].set(1 << (interrupt % 32));
-}
-
-pub unsafe fn clear_pending(signal: NvicIdx) {
-    let nvic: &mut Nvic = intrinsics::transmute(BASE_ADDRESS);
-    let interrupt = signal as usize;
-
-    nvic.icpr[interrupt / 32].set(1 << (interrupt % 32));
-}
+pub const WWDG: u32 = 0;
+pub const PVD: u32 = 1;
+pub const TAMPER: u32 = 2;
+pub const RTC: u32 = 3;
+pub const FLASH: u32 = 4;
+pub const RCC: u32 = 5;
+pub const EXTI0: u32 = 6;
+pub const EXTI1: u32 = 7;
+pub const EXTI2: u32 = 8;
+pub const EXTI3: u32 = 9;
+pub const EXTI4: u32 = 10;
+pub const DMA1_CHANNEL1: u32 = 11;
+pub const DMA1_CHANNEL2: u32 = 12;
+pub const DMA1_CHANNEL3: u32 = 13;
+pub const DMA1_CHANNEL4: u32 = 14;
+pub const DMA1_CHANNEL5: u32 = 15;
+pub const DMA1_CHANNEL6: u32 = 16;
+pub const DMA1_CHANNEL7: u32 = 17;
+pub const ADC1_2: u32 = 18;
+pub const USB_HP_CAN1_TX: u32 = 19;
+pub const USB_LP_CAN1_RX0: u32 = 20;
+pub const CAN1_RX1: u32 = 21;
+pub const CAN1_SCE: u32 = 22;
+pub const EXTI9_5: u32 = 23;
+pub const TIM1_BRK: u32 = 24;
+pub const TIM1_UP: u32 = 25;
+pub const TIM1_TRG_COM: u32 = 26;
+pub const TIM1_CC: u32 = 27;
+pub const TIM2: u32 = 28;
+pub const TIM3: u32 = 29;
+pub const TIM4: u32 = 30;
+pub const I2C1_EV: u32 = 31;
+pub const I2C1_ER: u32 = 32;
+pub const I2C2_EV: u32 = 33;
+pub const I2C2_ER: u32 = 34;
+pub const SPI1: u32 = 35;
+pub const SPI2: u32 = 36;
+pub const USART1: u32 = 37;
+pub const USART2: u32 = 38;
+pub const USART3: u32 = 39;
+pub const EXTI15_10: u32 = 40;
+pub const RTC_ALARM: u32 = 41;
+pub const USBWAKEUP: u32 = 42;
+pub const TIM8_BRK: u32 = 43;
+pub const TIM8_UP: u32 = 44;
+pub const TIM8_TRG_COM: u32 = 45;
+pub const TIM8_CC: u32 = 46;
+pub const ADC3: u32 = 47;
+pub const FSMC: u32 = 48;
+pub const SDIO: u32 = 49;
+pub const TIM5: u32 = 50;
+pub const SPI3: u32 = 51;
+pub const UART4: u32 = 52;
+pub const UART5: u32 = 53;
+pub const TIM6: u32 = 54;
+pub const TIM7: u32 = 55;
+pub const DMA2_CHANNEL1: u32 = 56;
+pub const DMA2_CHANNEL2: u32 = 57;
+pub const DMA2_CHANNEL3: u32 = 58;
+pub const DMA2_CHANNEL4_5: u32 = 59;

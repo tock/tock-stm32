@@ -5,10 +5,6 @@
 #[macro_use(debug)]
 extern crate kernel;
 
-#[macro_use]
-mod helpers;
-
-pub mod chip;
 pub mod flash;
 pub mod gpio;
 pub mod nvic;
