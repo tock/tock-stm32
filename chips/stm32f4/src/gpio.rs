@@ -3,8 +3,8 @@
 use core::cell::Cell;
 use exti;
 use helpers::{Bit, BitRange};
-use kernel::common::VolatileCell;
 use kernel::common::static_ref::StaticRef;
+use kernel::common::VolatileCell;
 use kernel::hil;
 use kernel::hil::gpio::{InterruptMode, Pin};
 

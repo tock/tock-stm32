@@ -2,11 +2,10 @@ use core::cell::Cell;
 use core::mem;
 use gpio;
 use kernel;
-use kernel::common::VolatileCell;
 use kernel::common::take_cell::TakeCell;
+use kernel::common::VolatileCell;
 use kernel::hil;
 use kernel::hil::Controller;
-use nvic;
 use rcc;
 
 #[repr(C, packed)]
@@ -31,7 +30,6 @@ const USART_BASE_ADDRS: [*mut USARTRegisters; 5] = [
 pub struct USART {
     registers: *mut USARTRegisters,
     clock: rcc::Clock,
-    nvic: nvic::NvicIdx,
     rx: Cell<Option<&'static gpio::GPIOPin>>,
     tx: Cell<Option<&'static gpio::GPIOPin>>,
     client: Cell<Option<&'static kernel::hil::uart::Client>>,
@@ -43,27 +41,23 @@ pub struct USART {
 pub static mut USART1: USART = USART::new(
     USART_BASE_ADDRS[0],
     rcc::Clock::APB2(rcc::APB2Clock::USART1),
-    nvic::NvicIdx::USART1,
 );
 
 pub static mut USART2: USART = USART::new(
     USART_BASE_ADDRS[1],
     rcc::Clock::APB1(rcc::APB1Clock::USART2),
-    nvic::NvicIdx::USART2,
 );
 
 pub static mut USART3: USART = USART::new(
     USART_BASE_ADDRS[2],
     rcc::Clock::APB1(rcc::APB1Clock::USART3),
-    nvic::NvicIdx::USART3,
 );
 
 impl USART {
-    const fn new(base_addr: *mut USARTRegisters, clock: rcc::Clock, nvic: nvic::NvicIdx) -> USART {
+    const fn new(base_addr: *mut USARTRegisters, clock: rcc::Clock) -> USART {
         USART {
             registers: base_addr,
             clock: clock,
-            nvic: nvic,
             rx: Cell::new(None),
             tx: Cell::new(None),
             client: Cell::new(None),
@@ -90,7 +84,6 @@ impl USART {
         let regs: &mut USARTRegisters = unsafe { mem::transmute(self.registers) };
         unsafe {
             rcc::enable_clock(self.clock);
-            nvic::enable(self.nvic);
         }
         regs.cr1.set(regs.cr1.get() | (1 << 13)); // UE
     }
@@ -185,7 +178,3 @@ impl hil::uart::UART for USART {
         unimplemented!()
     }
 }
-
-interrupt_handler!(usart1_handler, USART1);
-interrupt_handler!(usart2_handler, USART2);
-interrupt_handler!(usart3_handler, USART3);

@@ -15,7 +15,7 @@ panic = "abort"
 lto = true
 
 [dependencies]
-cortexm3 = { path = "../../arch/cortex-m3" }
+cortexm3 = { path = "../../tock/arch/cortex-m3" }
 capsules = { path = "../../tock/capsules" }
 kernel = { path = "../../tock/kernel" }
 stm32 = { path = "../../chips/stm32" }
