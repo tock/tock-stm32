@@ -1,3 +1,10 @@
+# Archive Notice:
+
+Mainstream STM support has been upstreamed into the [main tock kernel](https://github.com/tock/tock).
+
+----
+
+
 # Tock for STM32
 
 [![Build Status](https://travis-ci.org/tock/tock-stm32.svg?branch=master)](https://travis-ci.org/tock/tock-stm32)
